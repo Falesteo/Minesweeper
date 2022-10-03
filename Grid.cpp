@@ -21,7 +21,7 @@ Grid::Grid(sf::Vector2u windowSize) {
     setNeighbours();
 
     // add obstacles to the grid
-    bombChance = 0.1;
+    bombChance = 0.15;
     addBombs();
 
     setNumbers();
@@ -74,9 +74,30 @@ void Grid::setNumbers() {
 }
 
 void Grid::update(sf::RenderWindow &window, int deltaTime) {
+    // check if some cells are still expanding
+    if (size(oldExpandingCells) > 0) {
+        if (timer > 0.05f) {
+            newExpandingCells = {};
+            for (auto cell: oldExpandingCells)
+                cell->expand(*this);
+
+            oldExpandingCells = newExpandingCells;
+            timer = 0;
+        }
+    } else
+        getMouseInput(window);
+
     for (int i = 0; i < gridSize.x; i++)
         for (int j = 0; j < gridSize.y; j++)
-            cells[i][j].update(window, deltaTime);
+            cells[i][j].update(window);
+
+    timer += deltaTime / 1000.f;
+}
+
+void Grid::getMouseInput(sf::RenderWindow &window) {
+    for (int i = 0; i < gridSize.x; i++)
+        for (int j = 0; j < gridSize.y; j++)
+            cells[i][j].getMouseInput(window, *this);
 }
 
 void Grid::draw(sf::RenderWindow &window) {

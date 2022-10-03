@@ -13,21 +13,22 @@ public:
     Cell(sf::Vector2i pos, float side, sf::Font font);
     ~Cell() = default;
 
-    void setBomb(bool bomb) {
-        Cell::bomb = bomb;
-        if (bomb)
-            adjacentBombs = -1;
-    }
+    void setBomb(bool bomb) { Cell::bomb = bomb; }
     bool hasBomb() { return bomb; }
 
     void draw(sf::RenderWindow &window);
-    void update(sf::RenderWindow &window, int deltaTime);
+    void update(sf::RenderWindow &window);
 
     void setNumber(Grid &grid);
 
     void setNeighbours(Grid &grid);
 
-    void setDiscovered(bool discovered);
+    void getMouseInput(sf::RenderWindow &window, Grid &grid);
+
+    void expand(Grid &grid);
+    bool isExpanding() { return cellDiscoveredRect.isExpanding(); }
+
+    void setDiscovered(bool discovered) { Cell::discovered = discovered; }
     bool getDiscovered() { return discovered; }
 
 private:
@@ -39,11 +40,16 @@ private:
 
     int adjacentBombs = 0;
 
-    CellRect cellUnknownRect = {sf::Color(20, 150, 57), sf::Color(239, 254, 255, 64)};
-    CellRect cellDiscoveredRect = {sf::Color(239, 254, 255), sf::Color(20, 150, 57, 64)};
+    // light mode
+    CellRect cellUnknownRect = {sf::Color(147, 184, 156), sf::Color(239, 254, 255, 64)};
+    CellRect cellDiscoveredRect = {sf::Color(239, 254, 255), sf::Color(147, 184, 156, 64)};
+    // dark mode
+    // CellRect cellUnknownRect = {sf::Color(196, 255, 213), sf::Color(0, 23, 7, 64)};
+    // CellRect cellDiscoveredRect = {sf::Color(0, 23, 7), sf::Color(196, 255, 213, 64)};
 
     bool bomb = false;
-    sf::CircleShape bombSprite;
+    sf::Texture bombTexture;
+    sf::Sprite bombSprite;
 
     bool flag = false;
     sf::Texture flagTexture;

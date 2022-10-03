@@ -8,6 +8,7 @@
 #include "SFML/Graphics.hpp"
 #include <iostream>
 #include <cmath>
+#include <list>
 using namespace std;
 
 class CellRect {
@@ -15,16 +16,19 @@ public:
     CellRect(sf::Color color, sf::Color outline);
     ~CellRect() = default;
 
-    void update(bool active, float side, int deltaTime);
+    void update(bool active, float side);
 
     void draw(sf::RenderWindow &window);
 
     sf::RectangleShape rect;
 
+    bool isExpanding() { return expanding; }
+
 private:
     sf::Vector2f pos;
-    float timer = 0;
+
     bool active = false;
+    bool expanding = false;
 };
 
 

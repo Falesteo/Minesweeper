@@ -19,6 +19,9 @@ public:
 
     sf::Vector2i gridSize;
 
+    std::list<Cell*> oldExpandingCells = {};
+    std::list<Cell*> newExpandingCells = {};
+
 private:
     int scale;
     int side;
@@ -34,9 +37,14 @@ private:
 
     void setNumbers();
 
+    bool expanding = false;
+    void getMouseInput(sf::RenderWindow &window);
+
     bool is_equal(float a, float b) { return fabs(a - b) <= 0.01; }
 
     sf::Font font;
+
+    float timer = 0;
 };
 
 

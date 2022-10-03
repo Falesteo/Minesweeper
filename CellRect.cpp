@@ -11,26 +11,20 @@ CellRect::CellRect(sf::Color color, sf::Color outline) {
     rect.setOutlineThickness(1);
 }
 
-void CellRect::update(bool active, float side, int deltaTime) {
-    if (active != this->active) {
-        this->active = active;
-        timer = 0;
+void CellRect::update(bool active, float side) {
+    if (active) {
+        if (rect.getSize().x < side) {
+            rect.setSize({rect.getSize().x + 1, rect.getSize().y + 1});
+            expanding = true;
+        } else
+            expanding = false;
     } else {
-        if (timer > 1)
-            timer = 1;
-        else if (timer < 0)
-            timer = 0;
+        if (rect.getSize().x > 0)
+            rect.setSize({rect.getSize().x - 1, rect.getSize().y - 1});
     }
-
-    if (this->active)
-        rect.setSize({side * timer, side * timer});
-    else
-        rect.setSize({side * (1 - timer), side * (1 - timer)});
 
     // change the origin point
     rect.setOrigin(rect.getSize().x / 2, rect.getSize().y / 2);
-
-    timer += 5 * deltaTime / pow(10, 3);
 }
 
 void CellRect::draw(sf::RenderWindow &window) {
