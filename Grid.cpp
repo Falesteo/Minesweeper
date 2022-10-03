@@ -11,9 +11,20 @@ Grid::Grid(sf::Vector2u windowSize) {
         system("pause");
     }
 
+    if (!flagTexture.loadFromFile("Assets/Images/flag.png")) {
+        cout << "flag texture loading failed" << endl;
+        system("pause");
+    }
+
+    if (!bombTexture.loadFromFile("Assets/Images/mine.png")) {
+        cout << "mine texture loading failed" << endl;
+        system("pause");
+    }
+
     // get window dimensions
     scale = 2;
-    getGridMeasures(windowSize, scale);
+    menuHeight = 1;
+    getGridMeasures(windowSize);
 
     // and initialize cells matrix accordingly
     initializeGrid();
@@ -21,24 +32,24 @@ Grid::Grid(sf::Vector2u windowSize) {
     setNeighbours();
 
     // add obstacles to the grid
-    bombChance = 0.15;
+    bombChance = 0.1;
     addBombs();
 
     setNumbers();
 }
 
-void Grid::getGridMeasures(sf::Vector2u windowSize, int scale) {
+void Grid::getGridMeasures(sf::Vector2u windowSize) {
     float aspectRatio = float(windowSize.x) / float(windowSize.y);
 
     // calculate the game unit based on the screen resolution
     if (is_equal(aspectRatio, 16.0 / 9.0) ||
         is_equal(aspectRatio, 16.0 / 10.0) ||
         is_equal(aspectRatio, 4.0 / 3.0))
-        gridSize = {16 * scale, 9 * scale};
+        gridSize = {16 * scale, int((9 - menuHeight) * scale)};
     else if (is_equal(aspectRatio, 5.0 / 4.0))
-        gridSize = {15 * scale, 12 * scale};
+        gridSize = {15 * scale, int((12 - menuHeight) * scale)};
     else if (is_equal(aspectRatio, 21.0 / 9.0))
-        gridSize = {21 * scale, 9 * scale};
+        gridSize = {21 * scale, int((9 - menuHeight) * scale)};
 
     side = floor(windowSize.x / gridSize.x);
 }
@@ -48,7 +59,7 @@ void Grid::initializeGrid() {
     for (int i = 0; i < gridSize.x; i++) {
         cells.emplace_back();
         for (int j = 0; j < gridSize.y; j++) {
-            Cell cell({i, j}, side, font);
+            Cell cell({i, j}, *this);
             cells[i].push_back(cell);
         }
     }
@@ -84,6 +95,11 @@ void Grid::update(sf::RenderWindow &window, int deltaTime) {
             oldExpandingCells = newExpandingCells;
             timer = 0;
         }
+    } else if (detonated != nullptr) {
+        for (int i = 0; i < size(cells); i++)
+            for (int j = 0; j < size(cells[i]); j++)
+                if (cells[i][j].hasBomb() && !cells[i][j].hasFlag() && dist(cells[i][j].getPosition(), detonated->getPosition()) < timer * 400)
+                    cells[i][j].setDiscovered(true);
     } else
         getMouseInput(window);
 
@@ -104,4 +120,13 @@ void Grid::draw(sf::RenderWindow &window) {
     for (int i = 0; i < gridSize.x; i++)
         for (int j = 0; j < gridSize.y; j++)
             cells[i][j].draw(window);
+}
+
+void Grid::reset() {
+    initializeGrid();
+    setNeighbours();
+    addBombs();
+    setNumbers();
+
+    detonated = nullptr;
 }

@@ -10,11 +10,23 @@
 class Grid;
 class Cell {
 public:
-    Cell(sf::Vector2i pos, float side, sf::Font font);
+    Cell(sf::Vector2i indexes, Grid &grid);
     ~Cell() = default;
 
+    bool hasBomb() const { return bomb; }
     void setBomb(bool bomb) { Cell::bomb = bomb; }
-    bool hasBomb() { return bomb; }
+
+    bool hasFlag() const { return flag; }
+    void setFlag(bool flag) { Cell::flag = flag; }
+
+    bool isExpanding() { return cellDiscoveredRect.isExpanding(); }
+    void expand(Grid &grid);
+
+    bool getDiscovered() const { return discovered; }
+    void setDiscovered(bool discovered) { Cell::discovered = discovered; }
+
+    sf::Vector2f getPosition() const { return pos; }
+    void setPosition(sf::Vector2f pos) { Cell::pos = pos; }
 
     void draw(sf::RenderWindow &window);
     void update(sf::RenderWindow &window);
@@ -25,11 +37,7 @@ public:
 
     void getMouseInput(sf::RenderWindow &window, Grid &grid);
 
-    void expand(Grid &grid);
-    bool isExpanding() { return cellDiscoveredRect.isExpanding(); }
 
-    void setDiscovered(bool discovered) { Cell::discovered = discovered; }
-    bool getDiscovered() { return discovered; }
 
 private:
     sf::Vector2i indexes;
@@ -50,10 +58,13 @@ private:
     bool bomb = false;
     sf::Texture bombTexture;
     sf::Sprite bombSprite;
+    CellRect cellBombRect = {sf::Color(190, 209, 195), sf::Color(239, 254, 255, 64)};
 
     bool flag = false;
+    bool addFlag = false;
     sf::Texture flagTexture;
     sf::Sprite flagSprite;
+    CellRect cellFlagRect = {sf::Color(190, 209, 195), sf::Color(239, 254, 255, 64)};
 
     bool discovered = false;
 

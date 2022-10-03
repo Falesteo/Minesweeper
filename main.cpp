@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "Grid.h"
+#include "UI.h"
 
 int main() {
     // initialize the randomic number generator
@@ -20,6 +21,7 @@ int main() {
 
     // create the grid
     Grid grid({window.getSize().x, window.getSize().y});
+    UI ui(window, grid);
 
     // Game loop
     while (window.isOpen()) {
@@ -42,7 +44,10 @@ int main() {
         window.clear(sf::Color(239, 254, 255));
 
         // project update and draw
+        ui.update(window, grid);
         grid.update(window, deltaTime);
+
+        ui.draw(window);
         grid.draw(window);
 
         // Bring to screen and display the new frame just drawn

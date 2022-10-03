@@ -19,8 +19,11 @@ void CellRect::update(bool active, float side) {
         } else
             expanding = false;
     } else {
-        if (rect.getSize().x > 0)
+        if (rect.getSize().x > 0) {
             rect.setSize({rect.getSize().x - 1, rect.getSize().y - 1});
+            expanding = true;
+        } else
+            expanding = false;
     }
 
     // change the origin point
